@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useCognitiveDataSimulator } from '../hooks/useCognitiveDataSimulator';
-import { CognitiveData } from '../types';
+import { CognitiveData, CognitiveState } from '../types';
 import CognitiveMetricsCard from './CognitiveMetricsCard';
 import InterventionsCard from './InterventionsCard';
 import ModelExplanationCard from './ModelExplanationCard';
 import RealTimeChart from './RealTimeChart';
 import SessionSummaryCard from './SessionSummaryCard';
+import { STATE_METADATA } from '../constants';
 
 const PlayIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -22,14 +23,41 @@ const BrainWaveIcon = () => (
 const Dashboard: React.FC = () => {
   const { isRunning, latestData, history, start, stop } = useCognitiveDataSimulator();
   const [sessionSummaryData, setSessionSummaryData] = useState<CognitiveData[] | null>(null);
+  const [manualInterventions, setManualInterventions] = useState<string[]>([]);
+
+  const handleRequestNewIntervention = () => {
+    if (!latestData) return;
+    const currentState = latestData.cognitive_state;
+    const metadata = STATE_METADATA[currentState];
+    const possibleInterventions = metadata.interventions;
+    
+    const currentVisibleInterventions = [
+        ...manualInterventions, 
+        ...(latestData.interventions || [])
+    ];
+    const uniqueCurrent = [...new Set(currentVisibleInterventions)];
+
+    let newIntervention: string | undefined;
+
+    if (possibleInterventions.length > uniqueCurrent.length) {
+        newIntervention = possibleInterventions.find(p => !uniqueCurrent.includes(p));
+    }
+    
+    if (!newIntervention) {
+        newIntervention = possibleInterventions[Math.floor(Math.random() * possibleInterventions.length)];
+    }
+
+    setManualInterventions(prev => [newIntervention!, ...prev].slice(0, 3));
+  };
+
 
   const handleStart = () => {
     setSessionSummaryData(null);
+    setManualInterventions([]);
     start();
   };
 
   const handleStop = () => {
-    // Pass a copy of the history at the moment of stopping
     setSessionSummaryData([...history]);
     stop();
   };
@@ -58,8 +86,8 @@ const Dashboard: React.FC = () => {
             <RealTimeChart data={history} />
           </div>
           <div className="flex flex-col gap-6">
-            <CognitiveMetricsCard data={latestData} />
-            <InterventionsCard data={latestData} />
+            <CognitiveMetricsCard data={latestData} onRequestNewIntervention={handleRequestNewIntervention} />
+            <InterventionsCard data={latestData} manualInterventions={manualInterventions} />
             <ModelExplanationCard data={latestData} />
           </div>
           {sessionSummaryData && !isRunning && (

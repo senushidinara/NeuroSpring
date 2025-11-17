@@ -4,6 +4,7 @@ import { STATE_METADATA } from '../constants';
 
 interface CognitiveMetricsCardProps {
   data: CognitiveData | null;
+  onRequestNewIntervention: () => void;
 }
 
 const BrainIcon = () => (
@@ -16,6 +17,10 @@ const ActivityIcon = () => (
 
 const ZapIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+);
+
+const SparklesIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.9 4.8-4.8 1.9 4.8 1.9L12 21l1.9-4.8 4.8-1.9-4.8-1.9L12 3z"/><path d="M5 8h2"/><path d="M17 16h2"/><path d="M8 5v2"/><path d="M16 17v2"/></svg>
 );
 
 const MetricItem: React.FC<{ icon: React.ReactNode; label: string; value: string; progress: number; progressColor: string; }> = ({ icon, label, value, progress, progressColor }) => (
@@ -33,15 +38,18 @@ const MetricItem: React.FC<{ icon: React.ReactNode; label: string; value: string
     </div>
 );
 
-const CognitiveMetricsCard: React.FC<CognitiveMetricsCardProps> = ({ data }) => {
+const CognitiveMetricsCard: React.FC<CognitiveMetricsCardProps> = ({ data, onRequestNewIntervention }) => {
   if (!data) {
     return (
-        <div className="bg-slate-800 rounded-lg p-4 shadow-lg animate-pulse h-64">
+        <div className="bg-slate-800 rounded-lg p-4 shadow-lg animate-pulse">
              <div className="h-6 bg-slate-700 rounded w-3/4 mb-6"></div>
              <div className="space-y-6">
                 <div className="h-8 bg-slate-700 rounded"></div>
                 <div className="h-8 bg-slate-700 rounded"></div>
                 <div className="h-8 bg-slate-700 rounded"></div>
+                <div className="h-4 bg-slate-700 rounded w-1/2 mt-8 mb-4"></div>
+                <div className="h-6 bg-slate-700 rounded"></div>
+                <div className="h-6 bg-slate-700 rounded"></div>
              </div>
         </div>
     );
@@ -68,18 +76,49 @@ const CognitiveMetricsCard: React.FC<CognitiveMetricsCardProps> = ({ data }) => 
       <MetricItem icon={<ZapIcon />} label="Model Confidence" value={`${(confidence * 100).toFixed(0)}%`} progress={confidence * 100} progressColor="bg-purple-500" />
 
       <div>
-        <h4 className="text-sm font-medium text-slate-300 mb-2">EEG Frequency Bands</h4>
-        <div className="flex flex-wrap gap-2">
+        <h4 className="text-sm font-medium text-slate-300 mb-3">EEG Frequency Bands</h4>
+        <div className="space-y-3">
           {Object.entries(band_powers).map(([band, power]) => {
-            // FIX: Cast power to number before calling toFixed. Object.entries types values as unknown.
+            const bandPower = power as number;
+            const MAX_POWER = 3.0; 
+            const percentage = Math.min((bandPower / MAX_POWER) * 100, 100);
+            
+            const BAND_COLORS: Record<string, string> = {
+                delta: 'bg-indigo-500',
+                theta: 'bg-sky-500',
+                alpha: 'bg-emerald-500',
+                beta: 'bg-amber-500',
+                gamma: 'bg-red-500',
+            };
+
             return (
-              <div key={band} className="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">
-                <span className="capitalize">{band}</span>: {(power as number).toFixed(2)}
+              <div key={band} className="grid grid-cols-6 gap-2 items-center text-xs">
+                <span className="col-span-1 capitalize text-slate-400 font-medium">{band}</span>
+                <div className="col-span-4 w-full bg-slate-700 rounded-full h-2">
+                  <div 
+                    className={`${BAND_COLORS[band] || 'bg-slate-500'} h-2 rounded-full transition-all duration-500`}
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <span className="col-span-1 font-mono text-slate-300 text-right font-semibold">{bandPower.toFixed(2)}</span>
               </div>
             );
           })}
         </div>
       </div>
+
+      <div className="mt-1">
+        <button
+          onClick={onRequestNewIntervention}
+          disabled={!data}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold text-cyan-200 bg-cyan-600/20 rounded-lg hover:bg-cyan-600/40 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Suggest a new intervention"
+        >
+          <SparklesIcon />
+          New Suggestion
+        </button>
+      </div>
+
     </div>
   );
 };
