@@ -1,0 +1,5 @@
+{
+  "name": "NeuroSpring: Real-Time Cognitive Load Optimizer",
+  "description": "A sleek web dashboard that simulates real-time cognitive state analysis from EEG data, providing live metrics, focus scores, and personalized AI-driven recommendations for learning and productivity.",
+  "requestFramePermissions": []
+}
