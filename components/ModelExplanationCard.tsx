@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CognitiveData } from '../types';
 
@@ -16,7 +15,7 @@ const ModelExplanationCard: React.FC<ModelExplanationCardProps> = ({ data }) => 
     };
     
     return (
-        <div className="bg-slate-800 rounded-lg p-4 shadow-lg h-full">
+        <div className="bg-slate-800 rounded-lg p-4 shadow-lg h-full transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
             <div className="flex items-center gap-3 mb-4">
                 <InfoIcon />
                 <h3 className="text-lg font-semibold text-slate-100">AI Model Explanation (XAI)</h3>

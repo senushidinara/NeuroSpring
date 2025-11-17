@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CognitiveData } from '../types';
 
@@ -12,7 +11,7 @@ const LightbulbIcon = () => (
 
 const InterventionsCard: React.FC<InterventionsCardProps> = ({ data }) => {
     return (
-        <div className="bg-slate-800 rounded-lg p-4 shadow-lg h-full">
+        <div className="bg-slate-800 rounded-lg p-4 shadow-lg h-full transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
             <div className="flex items-center gap-3 mb-4">
                 <LightbulbIcon />
                 <h3 className="text-lg font-semibold text-slate-100">Personalized Interventions</h3>

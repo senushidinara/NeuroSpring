@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CognitiveData } from '../types';
 import { STATE_METADATA } from '../constants';
@@ -58,7 +57,7 @@ const CognitiveMetricsCard: React.FC<CognitiveMetricsCardProps> = ({ data }) => 
   };
 
   return (
-    <div className="bg-slate-800 rounded-lg p-4 shadow-lg flex flex-col gap-5">
+    <div className="bg-slate-800 rounded-lg p-4 shadow-lg flex flex-col gap-5 transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
       <div className="flex justify-between items-start">
         <h3 className="text-lg font-semibold text-slate-100">Cognitive Metrics</h3>
         <span className={`px-2 py-0.5 text-xs font-semibold rounded-full text-white ${stateMeta.color}`}>{stateMeta.label}</span>
@@ -71,11 +70,14 @@ const CognitiveMetricsCard: React.FC<CognitiveMetricsCardProps> = ({ data }) => 
       <div>
         <h4 className="text-sm font-medium text-slate-300 mb-2">EEG Frequency Bands</h4>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(band_powers).map(([band, power]) => (
-            <div key={band} className="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">
-              <span className="capitalize">{band}</span>: {power.toFixed(2)}
-            </div>
-          ))}
+          {Object.entries(band_powers).map(([band, power]) => {
+            // FIX: Cast power to number before calling toFixed. Object.entries types values as unknown.
+            return (
+              <div key={band} className="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">
+                <span className="capitalize">{band}</span>: {(power as number).toFixed(2)}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

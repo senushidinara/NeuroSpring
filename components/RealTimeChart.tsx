@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { CognitiveData } from '../types';
@@ -15,9 +14,9 @@ const RealTimeChart: React.FC<RealTimeChartProps> = ({ data }) => {
   }));
 
   return (
-    <div className="bg-slate-800 rounded-lg p-4 h-96 shadow-lg">
+    <div className="bg-slate-800 rounded-lg p-4 h-[500px] shadow-lg transition-transform duration-200 hover:scale-[1.01] cursor-pointer">
        <h3 className="text-lg font-semibold text-slate-100 mb-4">Real-Time Cognitive Trends</h3>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="90%">
         <LineChart data={formattedData} margin={{ top: 5, right: 20, left: -10, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
           <XAxis 
